@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+
+class User
+{
+    public string Username { get; set; }
+    public string Pin { get; set; }
+    public double Balance { get; set; }
+}
+
+class Program
+{
+    static List<User> Users = new List<User>();
+
+    static void Main(string[] args)
+    {
+        AddUser("aldrin1", "0987", 800);
+        AddUser("aldrin2", "0956", 600);
+        AddUser("aldrin3", "0999", 900);
+
+        while (true)
+        {
+            Console.Write("Enter username: ");
+            string username = Console.ReadLine();
+
+            Console.Write("Enter PIN: ");
+            string pin = Console.ReadLine();
+
+            User user = ValidateUser(username, pin);
+            if (user != null)
+            {
+                DisplayMenu();
+
+                string choice = Console.ReadLine().ToLower();
+
+                switch (choice)
+                {
+                    case "1":
+                        Withdraw(user);
+                        break;
+                    case "2":
+                        Deposit(user);
+                        break;
+                    case "3":
+                        Inquiry(user);
+                        break;
+                    case "exit":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid username or PIN. Please try again.");
+            }
+        }
+    }
+
+    static void AddUser(string username, string pin, double initialBalance)
+    {
+        Users.Add(new User { Username = username, Pin = pin, Balance = initialBalance });
+    }
+
+    static User ValidateUser(string username, string pin)
+    {
+        return Users.Find(u => u.Username == username && u.Pin == pin);
+    }
+
+    static void DisplayMenu()
+    {
+        Console.WriteLine("Select number for transaction method");
+        Console.WriteLine("1 for Withdraw");
+        Console.WriteLine("2 for Deposit");
+        Console.WriteLine("3 for Inquiry");
+        Console.WriteLine("Type 'exit' to end the program");
+        Console.Write("Type here: ");
+    }
+
+    static void Withdraw(User user)
+    {
+        Console.Write("Enter amount to withdraw: ");
+        if (double.TryParse(Console.ReadLine(), out double withdrawAmount))
+        {
+            if (withdrawAmount > 0 && withdrawAmount <= user.Balance)
+            {
+                user.Balance -= withdrawAmount;
+                Console.WriteLine($"Withdrawal Successful. New Balance: {user.Balance}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid Withdrawal Amount. Please Try Again.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid Input. Please Enter a Valid Number.");
+        }
+    }
+
+    static void Deposit(User user)
+    {
+        Console.Write("Enter Amount To Deposit: ");
+        if (double.TryParse(Console.ReadLine(), out double depositAmount))
+        {
+            if (depositAmount > 0)
+            {
+                user.Balance += depositAmount;
+                Console.WriteLine($"Deposit Successful. New Balance: {user.Balance}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid Deposit Amount. Please Try Again.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid Input. Please Enter A Valid Number.");
+        }
+    }
+
+    static void Inquiry(User user)
+    {
+        Console.WriteLine($"Current Balance For {user.Username}: {user.Balance}");
+    }
+}
